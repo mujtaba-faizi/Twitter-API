@@ -1,0 +1,10 @@
+<h1>{{ tweet.text }}</h1>
+
+<ul>
+{% for comment in tweet.comment_set.all %}
+    <li>{{ comment.text }} </br>
+        <i><strong>posted by {{ comment.user.username }}</strong></i>
+        </br></br>
+    </li>
+{% endfor %}
+</ul>

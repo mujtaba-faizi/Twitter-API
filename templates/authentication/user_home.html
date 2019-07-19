@@ -1,0 +1,56 @@
+<h1>{{ user.username }}</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+    <h3>First Name</h3>
+    <p>{{ user.first_name }}</p>
+
+    <h3>Last Name</h3>
+    <p>{{ user.last_name }}</p>
+
+    <h3>Email</h3>
+    <p>{{ user.email }}</p>
+
+    <h3>Phone Number</h3>
+    <p>{{ user.phone }}</p>
+
+<ul>
+    <h2><a href="{% url 'authentication:home' %}">Sign-out?</a></h2>
+    <h2><a href="{% url 'authentication:update_form' user.id %}">Update your profile?</a></h2>
+    <h2><a href="{% url 'tweets:tweet_form'  user.id%}">Post a tweet?</a></h2>
+    <h2><a href="{% url 'tweets:show_all_users' user.id %}">Search other users?</a></h2>
+</ul>
+
+<h2>Your Tweets:</h2>
+
+<ul>
+{% for tweet in tweets %}
+    {% if tweet.user_id is user.id %}
+        <li>{{ tweet.text }}
+            &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp <a href="{% url 'tweets:comment_form' user.id user.id tweet.id 'user_home'%}">Comment</a>
+            &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp <a href="{% url 'tweets:show_comments' user.id tweet.id %}">Show All Comments</a>
+        </br>
+        </li>
+        </br>
+    {% endif%}
+{% endfor %}
+</ul>
+
+<h2>Tweets by the users you followed:</h2>
+
+<ul>
+{% for follower in user.follower_set.all %}
+{% for tweet in tweets %}
+    {% if tweet.user_id is follower.followee_id %}
+        <li>{{ tweet.text }} &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp <a href="{% url 'tweets:like' user.id tweet.id 'user_home'%}">Like</a>
+            &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp <a href="{% url 'tweets:comment_form' user.id tweet.user_id tweet.id 'user_home'%}">Comment</a>
+            &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp <a href="{% url 'tweets:show_comments' user.id tweet.id %}">Show All Comments</a>
+        </br>
+            <i><strong>posted by {{ follower.followee_name }}</strong></i>
+        </li>
+        </br>
+    {% endif%}
+{% endfor %}
+{% endfor %}
+</ul>
+
