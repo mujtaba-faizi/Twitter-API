@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
 from .models import Tweet, Comment, Like
-from users.models import Follower, User
+from users.models import User
 
 
 class InputTweet(generic.DetailView):
@@ -35,19 +35,6 @@ def show_users(request, follower_user_id):
         'follower_user_id': follower_user_id,
     }
     return render(request, 'tweets/users.html', context)
-
-
-def add_follower(request, follower_user_id, followee_user_id):
-    try:
-        Follower.objects.get(followee_user_id=followee_user_id, follower_user_id=follower_user_id)
-    except (KeyError, Follower.DoesNotExist):       # If the user is not already followed
-        new_follower = Follower()
-        new_follower.follower_user_id = follower_user_id
-        new_follower.followee_user_id = followee_user_id
-        user = User.objects.get(pk=followee_user_id)
-        new_follower.followee_name = user.username
-        new_follower.save()
-    return HttpResponseRedirect(reverse('tweets:show_all_users', args=(follower_user_id,)))
 
 
 def like(request, user_id, profile_id, tweet_id, page):

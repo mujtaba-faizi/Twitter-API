@@ -2,7 +2,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
-from .models import User
+from .models import User, Follower
 from tweets.models import Tweet
 
 
@@ -69,3 +69,14 @@ def update_profile(request, user_id):
     return HttpResponseRedirect(reverse('users:user_home', args=(user_id,)))
 
 
+def add_follower(request, follower_user_id, followee_user_id):
+    try:
+        Follower.objects.get(followee_user_id=followee_user_id, follower_user_id=follower_user_id)
+    except (KeyError, Follower.DoesNotExist):       # If the user is not already followed
+        new_follower = Follower()
+        new_follower.follower_user_id = follower_user_id
+        new_follower.followee_user_id = followee_user_id
+        user = User.objects.get(pk=followee_user_id)
+        new_follower.followee_name = user.username
+        new_follower.save()
+    return HttpResponseRedirect(reverse('tweets:show_all_users', args=(follower_user_id,)))

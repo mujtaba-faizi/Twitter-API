@@ -12,5 +12,6 @@ urlpatterns = [
     path('<int:pk>/updateform/', views.Update.as_view(), name='update_form'),
     path('<int:user_id>/update/', views.update_profile, name='update'),
     path('signin/', views.SignIn.as_view(), name='signin'),
+    path('<int:follower_user_id>/users/<int:followee_user_id>/follow/', views.add_follower, name='add_follower'),
 
 ]
