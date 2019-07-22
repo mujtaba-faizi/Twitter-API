@@ -1,8 +1,8 @@
 from django.urls import path
-from authentication import views as views
+from users import views as views
 
 
-app_name = "authentication"
+app_name = "users"
 urlpatterns = [
     path('home/', views.HomeView.as_view(), name='home'),
     path('signup/', views.SignUp.as_view(), name='signup'),

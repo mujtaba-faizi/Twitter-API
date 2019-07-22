@@ -1,4 +1,4 @@
-from authentication.models import User
+from users.models import User
 from django.db.models import Model, CharField, DateTimeField, IntegerField, ForeignKey, CASCADE
 
 
