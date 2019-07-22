@@ -16,10 +16,8 @@ class User(Model):
 
 
 class Follower(Model):
-    follower = ForeignKey(User, on_delete=CASCADE)
-    followee_name = CharField(max_length=200)
-    followee_id = IntegerField(default=0)
+    follower_user = ForeignKey(User, on_delete=CASCADE, related_name="following")
+    followee_user = ForeignKey(User, on_delete=CASCADE, related_name="followed_by")
 
     def __str__(self):
-        return self.follower.username
-
+        return self.follower_user.username

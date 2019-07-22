@@ -2,8 +2,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
-from .models import Tweet, User, Comment, Like
-from users.models import Follower
+from .models import Tweet, Comment, Like
+from users.models import Follower, User
 
 
 class InputTweet(generic.DetailView):
@@ -39,11 +39,11 @@ def show_users(request, follower_user_id):
 
 def add_follower(request, follower_user_id, followee_user_id):
     try:
-        Follower.objects.get(followee_id=followee_user_id, follower_id=follower_user_id)
+        Follower.objects.get(followee_user_id=followee_user_id, follower_user_id=follower_user_id)
     except (KeyError, Follower.DoesNotExist):       # If the user is not already followed
         new_follower = Follower()
-        new_follower.follower_id = follower_user_id
-        new_follower.followee_id = followee_user_id
+        new_follower.follower_user_id = follower_user_id
+        new_follower.followee_user_id = followee_user_id
         user = User.objects.get(pk=followee_user_id)
         new_follower.followee_name = user.username
         new_follower.save()
@@ -53,7 +53,7 @@ def add_follower(request, follower_user_id, followee_user_id):
 def like(request, user_id, profile_id, tweet_id, page):
     try:
         Like.objects.get(tweet_id=tweet_id, user_id=user_id)
-    except (KeyError, Like.DoesNotExist):       # If the user is not already followed
+    except (KeyError, Like.DoesNotExist):
         like = Like()
         like.tweet_id = tweet_id
         like.user_id = user_id
