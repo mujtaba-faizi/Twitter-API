@@ -22,3 +22,4 @@ class Follower(Model):
 
     def __str__(self):
         return self.follower.username
+

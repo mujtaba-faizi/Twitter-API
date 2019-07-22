@@ -2,7 +2,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
-from .models import Tweet, User, Comment
+from .models import Tweet, User, Comment, Like
 from users.models import Follower
 
 
@@ -50,14 +50,18 @@ def add_follower(request, follower_user_id, followee_user_id):
     return HttpResponseRedirect(reverse('tweets:show_all_users', args=(follower_user_id,)))
 
 
-def like(request, user_id, tweet_id, page):
-    tweet = get_object_or_404(Tweet, pk=tweet_id)
-    tweet.likes += 1
-    tweet.save()
+def like(request, user_id, profile_id, tweet_id, page):
+    try:
+        Like.objects.get(tweet_id=tweet_id, user_id=user_id)
+    except (KeyError, Like.DoesNotExist):       # If the user is not already followed
+        like = Like()
+        like.tweet_id = tweet_id
+        like.user_id = user_id
+        like.save()
     if page == 'user_home':
         return HttpResponseRedirect(reverse('users:user_home', args=(user_id,)))
     elif page == 'profile':
-        return HttpResponseRedirect(reverse('tweets:user_profile', args=(user_id,)))
+        return HttpResponseRedirect(reverse('tweets:user_profile', args=(user_id, profile_id)))
 
 
 def comment(request, user_id, profile_id, tweet_id, page):
