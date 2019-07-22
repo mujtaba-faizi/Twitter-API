@@ -22,10 +22,3 @@ class Comment(Model):
         return self.tweet_id
 
 
-class Follower(Model):
-    follower = ForeignKey(User, on_delete=CASCADE)
-    followee_name = CharField(max_length=200)
-    followee_id = IntegerField(default=0)
-
-    def __str__(self):
-        return self.follower.username

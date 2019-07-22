@@ -7,24 +7,24 @@ from tweets.models import Tweet
 
 
 class HomeView(generic.TemplateView):
-    template_name = 'authentication/home.html'
+    template_name = 'users/home.html'
 
 
 class SignUp(generic.TemplateView):
-    template_name = 'authentication/signup.html'
+    template_name = 'users/signup.html'
 
 
 class SignIn(generic.TemplateView):
-    template_name = 'authentication/signin.html'
+    template_name = 'users/signin.html'
 
 
 class SignOut(generic.TemplateView):
-    template_name = 'authentication/home.html'
+    template_name = 'users/home.html'
 
 
 class Update(generic.DetailView):
     model = User
-    template_name = 'authentication/update_form.html'
+    template_name = 'users/update_form.html'
 
 
 def show_homepage(request, user_id):
@@ -33,7 +33,7 @@ def show_homepage(request, user_id):
         tweets = Tweet.objects.all()
     except User.DoesNotExist:
         raise Http404("User does not exist")
-    return render(request, 'authentication/user_home.html', {'user': user, 'tweets': tweets})
+    return render(request, 'users/user_home.html', {'user': user, 'tweets': tweets})
 
 
 def save_user(request):
@@ -45,14 +45,14 @@ def save_user(request):
     new_user.username = request.POST['username']
     new_user.phone = request.POST['no']
     new_user.save()
-    return HttpResponseRedirect(reverse('authentication:signin'))
+    return HttpResponseRedirect(reverse('users:signin'))
 
 
 def authenticate(request):
     username = request.POST['username']
     password = request.POST['pass']
     user = get_object_or_404(User, username=username, password=password)
-    return HttpResponseRedirect(reverse('authentication:user_home', args=(user.id,)))
+    return HttpResponseRedirect(reverse('users:user_home', args=(user.id,)))
 
 
 def update_profile(request, user_id):
@@ -66,6 +66,6 @@ def update_profile(request, user_id):
                                                       last_name=last_name, phone=phone)
     except User.DoesNotExist:
         raise Http404("User does not exist")
-    return HttpResponseRedirect(reverse('authentication:user_home', args=(user_id,)))
+    return HttpResponseRedirect(reverse('users:user_home', args=(user_id,)))
 
 

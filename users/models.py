@@ -1,4 +1,4 @@
-from django.db.models import Model, CharField
+from django.db.models import Model, CharField, IntegerField, ForeignKey, CASCADE
 from django.core.validators import RegexValidator
 
 
@@ -13,3 +13,12 @@ class User(Model):
 
     def __str__(self):
         return self.username
+
+
+class Follower(Model):
+    follower = ForeignKey(User, on_delete=CASCADE)
+    followee_name = CharField(max_length=200)
+    followee_id = IntegerField(default=0)
+
+    def __str__(self):
+        return self.follower.username

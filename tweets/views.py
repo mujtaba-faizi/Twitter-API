@@ -2,7 +2,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
-from .models import Tweet, User, Follower, Comment
+from .models import Tweet, User, Comment
+from users.models import Follower
 
 
 class InputTweet(generic.DetailView):
@@ -24,7 +25,7 @@ def save_tweet(request, user_id):
     new_tweet.user_id = user_id
     new_tweet.text = request.POST['tweet']
     new_tweet.save()
-    return HttpResponseRedirect(reverse('authentication:user_home', args=(user_id,)))
+    return HttpResponseRedirect(reverse('users:user_home', args=(user_id,)))
 
 
 def show_users(request, follower_user_id):
@@ -54,7 +55,7 @@ def like(request, user_id, tweet_id, page):
     tweet.likes += 1
     tweet.save()
     if page == 'user_home':
-        return HttpResponseRedirect(reverse('authentication:user_home', args=(user_id,)))
+        return HttpResponseRedirect(reverse('users:user_home', args=(user_id,)))
     elif page == 'profile':
         return HttpResponseRedirect(reverse('tweets:user_profile', args=(user_id,)))
 
@@ -76,7 +77,7 @@ def save_comment(request, user_id, profile_id, tweet_id, page):
     comment.user_id = user_id
     comment.save()
     if page == 'user_home':
-        return HttpResponseRedirect(reverse('authentication:user_home', args=(user_id,)))
+        return HttpResponseRedirect(reverse('users:user_home', args=(user_id,)))
     elif page == 'profile':
         return HttpResponseRedirect(reverse('tweets:user_profile', args=(user_id, profile_id)))
 
