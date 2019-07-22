@@ -13,4 +13,5 @@ urlpatterns = [
     path('<int:user_id>/<int:profile_id>/<int:tweet_id>/<str:page>/comment/', views.comment, name='comment_form'),
     path('<int:user_id>/<int:profile_id>/<int:tweet_id>/<str:page>/save_comment/', views.save_comment, name='comment'),
     path('<int:user_id>/<int:tweet_id>/comments/', views.show_comments, name='show_comments'),
+    path('<int:user_id>/<int:tweet_id>/likes/', views.show_likes, name='show_likes'),
 ]

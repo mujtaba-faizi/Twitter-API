@@ -64,6 +64,15 @@ def like(request, user_id, profile_id, tweet_id, page):
         return HttpResponseRedirect(reverse('tweets:user_profile', args=(user_id, profile_id)))
 
 
+def show_likes(request, user_id, tweet_id):
+    likes = Like.objects.filter(tweet_id=tweet_id)
+    context = {
+        'user_id': user_id,
+        'likes': likes,
+    }
+    return render(request, 'tweets/likes.html', context)
+
+
 def comment(request, user_id, profile_id, tweet_id, page):
     context = {
         'user_id': user_id,
