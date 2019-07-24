@@ -1,14 +1,19 @@
-from django.contrib.auth.models import User, Group
 from rest_framework import serializers
+from django.contrib.auth.models import User
+from tweets.models import Tweet
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
+    tweets = serializers.PrimaryKeyRelatedField(many=True, queryset=Tweet.objects.all())
+
     class Meta:
         model = User
-        fields = ['url', 'username', 'email', 'groups']
+        fields = ['id', 'username', 'password', 'first_name', 'last_name', 'email', 'tweets']
 
 
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
+class TweetSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.username')
+
     class Meta:
-        model = Group
-        fields = ['url', 'name']
+        model = Tweet
+        fields = ['id', 'text', 'owner', 'created_at', 'updated_at']

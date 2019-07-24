@@ -1,5 +1,6 @@
 from django.db.models import Model, CharField, IntegerField, ForeignKey, CASCADE
 from django.core.validators import RegexValidator
+from django.contrib.auth.models import User
 
 
 class User(Model):

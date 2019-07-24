@@ -4,6 +4,11 @@ from django.urls import reverse
 from django.views import generic
 from .models import User, Follower
 from tweets.models import Tweet
+from django.contrib.auth.models import User
+from rest_framework import generics
+from .serializers import UserSerializer, TweetSerializer
+from rest_framework import permissions
+from users.permissions import IsOwnerOrReadOnly
 
 
 class HomeView(generic.TemplateView):
@@ -80,3 +85,29 @@ def add_follower(request, follower_user_id, followee_user_id):
         new_follower.followee_name = user.username
         new_follower.save()
     return HttpResponseRedirect(reverse('tweets:show_all_users', args=(follower_user_id,)))
+
+
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class TweetList(generics.ListCreateAPIView):
+    queryset = Tweet.objects.all()
+    serializer_class = TweetSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+
+class TweetDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Tweet.objects.all()
+    serializer_class = TweetSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]
