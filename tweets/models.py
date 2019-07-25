@@ -9,6 +9,13 @@ class Tweet(Model):
     updated_at = DateTimeField(auto_now=True)
     owner = ForeignKey('auth.User', related_name='tweets', on_delete=CASCADE)
 
+    def save(self, *args, **kwargs):
+        """
+        Use the `pygments` library to create a highlighted HTML
+        representation of the code snippet.
+        """
+        super(Tweet, self).save(*args, **kwargs)
+
     class Meta:
         ordering = ['created_at']
 

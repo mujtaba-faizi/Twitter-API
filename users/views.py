@@ -2,7 +2,8 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
-from .models import User, Follower
+from .models import Follower
+# from .models import User
 from tweets.models import Tweet
 from django.contrib.auth.models import User
 from .serializers import UserSerializer, TweetSerializer
