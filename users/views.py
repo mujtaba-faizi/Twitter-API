@@ -5,9 +5,8 @@ from django.views import generic
 from .models import User, Follower
 from tweets.models import Tweet
 from django.contrib.auth.models import User
-from rest_framework import generics
 from .serializers import UserSerializer, TweetSerializer
-from rest_framework import permissions
+from rest_framework import permissions, viewsets
 from users.permissions import IsOwnerOrReadOnly
 
 
@@ -87,27 +86,25 @@ def add_follower(request, follower_user_id, followee_user_id):
     return HttpResponseRedirect(reverse('tweets:show_all_users', args=(follower_user_id,)))
 
 
-class UserList(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
-
-
-class UserDetail(generics.RetrieveAPIView):
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    This viewset automatically provides `list` and `detail` actions.
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
-class TweetList(generics.ListCreateAPIView):
-    queryset = Tweet.objects.all()
-    serializer_class = TweetSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
+class TweetViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
 
-class TweetDetail(generics.RetrieveUpdateDestroyAPIView):
+    Additionally we also provide an extra `highlight` action.
+    """
     queryset = Tweet.objects.all()
     serializer_class = TweetSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)

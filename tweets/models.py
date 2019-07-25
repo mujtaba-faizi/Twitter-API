@@ -9,6 +9,9 @@ class Tweet(Model):
     updated_at = DateTimeField(auto_now=True)
     owner = ForeignKey('auth.User', related_name='tweets', on_delete=CASCADE)
 
+    class Meta:
+        ordering = ['created_at']
+
     def __str__(self):
         return self.text
 

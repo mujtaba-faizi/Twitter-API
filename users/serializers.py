@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'password', 'first_name', 'last_name', 'email', 'tweets']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'tweets']
 
 
 class TweetSerializer(serializers.ModelSerializer):
@@ -17,3 +17,4 @@ class TweetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tweet
         fields = ['id', 'text', 'owner', 'created_at', 'updated_at']
+
