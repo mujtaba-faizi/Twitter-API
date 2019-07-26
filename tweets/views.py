@@ -3,7 +3,10 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
 from .models import Tweet, Comment, Like
-from users.models import User
+from django.contrib.auth.models import User
+from .serializers import TweetSerializer
+from rest_framework import permissions, viewsets
+from users.permissions import IsOwnerOrReadOnly
 
 
 class InputTweet(generic.DetailView):
@@ -90,5 +93,20 @@ def show_comments(request, user_id, tweet_id):
     }
     return render(request, 'tweets/comments.html', context)
 
+
+class TweetViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+
+    Additionally we also provide an extra `highlight` action.
+    """
+    queryset = Tweet.objects.all()
+    serializer_class = TweetSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 

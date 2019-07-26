@@ -7,7 +7,6 @@ app_name = "users"
 
 # Create a router and register our viewsets with it.
 router = DefaultRouter()
-router.register(r'tweets', views.TweetViewSet)
 router.register(r'users', views.UserViewSet)
 
 # The API URLs are now determined automatically by the router.

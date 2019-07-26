@@ -1,4 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect, Http404
+from rest_framework.response import Response
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import generic
@@ -6,9 +7,10 @@ from .models import Follower
 # from .models import User
 from tweets.models import Tweet
 from django.contrib.auth.models import User
-from .serializers import UserSerializer, TweetSerializer
-from rest_framework import permissions, viewsets
+from .serializers import UserSerializer
+from rest_framework import permissions, viewsets, status
 from users.permissions import IsOwnerOrReadOnly
+from rest_framework.decorators import action
 
 
 class HomeView(generic.TemplateView):
@@ -87,25 +89,21 @@ def add_follower(request, follower_user_id, followee_user_id):
     return HttpResponseRedirect(reverse('tweets:show_all_users', args=(follower_user_id,)))
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    This viewset automatically provides `list` and `detail` actions.
-    """
+class UserViewSet(viewsets.ModelViewSet):
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    def update(self, request, *args, **kwargs):
+        """
+        Update user profile
+        """
+        if int(kwargs['pk']) is not request.user.id:
+            return Response({"detail": "User is not authorized"}, status=status.HTTP_403_FORBIDDEN)
+        return super(UserViewSet, self).update(request, *args, **kwargs)
 
-class TweetViewSet(viewsets.ModelViewSet):
-    """
-    This viewset automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
+    # @action(methods=['post'], detail=True, permission_classes=[IsAdminOrIsSelf])
+    # def follow(self, request, pk=None):
 
-    Additionally we also provide an extra `highlight` action.
-    """
-    queryset = Tweet.objects.all()
-    serializer_class = TweetSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly]
 
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+

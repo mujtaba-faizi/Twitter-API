@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from tweets.models import Tweet
+from .models import Follower
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -11,10 +12,13 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'first_name', 'last_name', 'email', 'tweets']
 
 
-class TweetSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
+class FollowerSerializer(serializers.ModelSerializer):
+    tweets = serializers.PrimaryKeyRelatedField(many=True, queryset=Tweet.objects.all())
 
     class Meta:
-        model = Tweet
-        fields = ['id', 'text', 'owner', 'created_at', 'updated_at']
+        model = Follower
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'tweets']
+
+
+
 

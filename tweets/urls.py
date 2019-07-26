@@ -1,9 +1,15 @@
-from django.urls import path
+from django.urls import path, include
 from tweets import views
+from rest_framework.routers import DefaultRouter
 
 
 app_name = "tweets"
+
+router = DefaultRouter()
+router.register(r'tweets', views.TweetViewSet)
+
 urlpatterns = [
+    path('', include(router.urls)),
     path('<int:user_id>/save/', views.save_tweet, name='save_tweet'),
     path('<int:pk>/tweetform/', views.InputTweet.as_view(), name='tweet_form'),
     path('<int:follower_user_id>/users/', views.show_users, name='show_all_users'),
