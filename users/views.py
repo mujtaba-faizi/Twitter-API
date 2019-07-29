@@ -7,10 +7,11 @@ from .models import Follower
 # from .models import User
 from tweets.models import Tweet
 from django.contrib.auth.models import User
-from .serializers import UserSerializer
+from .serializers import UserSerializer, FollowerSerializer
 from rest_framework import permissions, viewsets, status
 from users.permissions import IsOwnerOrReadOnly
 from rest_framework.decorators import action
+from rest_framework.views import APIView
 
 
 class HomeView(generic.TemplateView):
@@ -93,17 +94,40 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def update(self, request, *args, **kwargs):
         """
         Update user profile
         """
         if int(kwargs['pk']) is not request.user.id:
-            return Response({"detail": "User is not authorized"}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"detail": "User is not authorized"}, status=status.HTTP_401_UNAUTHORIZED)
         return super(UserViewSet, self).update(request, *args, **kwargs)
 
-    # @action(methods=['post'], detail=True, permission_classes=[IsAdminOrIsSelf])
-    # def follow(self, request, pk=None):
 
+class FollowUser(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+    def post(self, request, pk, format=None):
+        if pk is request.user.id:
+            return Response({"detail": "You cannot follow yourself"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            Follower.objects.get(follower_user_id=pk, followee_user_id=request.user.id)
+            return Response({"detail": "Already followed !!"}, status=status.HTTP_208_ALREADY_REPORTED)
+        except (KeyError, Follower.DoesNotExist):  # If the user is not already followed
+            data = request.data
+            data['follower_user'] = pk
+            data['followee_user'] = request.user.id
+            serializer = FollowerSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, pk):
+        try:
+            follow_object = Follower.objects.get(follower_user_id=pk, followee_user_id=request.user.id)
+            follow_object.delete()
+            return Response({"detail": "Succesfully unfollowed !!"}, status=status.HTTP_204_NO_CONTENT)
+        except (KeyError, Follower.DoesNotExist):  # If the user is not already followed
+            return Response({"detail": "Not followed"}, status=status.HTTP_400_BAD_REQUEST)

@@ -14,6 +14,8 @@ urlpatterns = [
     path('', include(router.urls)),
     path('auth/', include('rest_auth.urls')),
     path('auth/signup/', include('rest_auth.registration.urls')),
+    path('users/<int:pk>/follow/', views.FollowUser.as_view()),
+
     path('home/', views.HomeView.as_view(), name='home'),
     path('signup/', views.SignUp.as_view(), name='signup'),
     path('signup/save/', views.save_user, name='save_user'),

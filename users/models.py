@@ -1,6 +1,7 @@
 from django.db.models import Model, CharField, IntegerField, ForeignKey, CASCADE
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
+from rest_framework import serializers
 
 
 # class User(Model):
@@ -22,3 +23,5 @@ class Follower(Model):
 
     def __str__(self):
         return self.follower_user.username
+
+

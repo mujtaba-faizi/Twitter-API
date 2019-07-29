@@ -9,23 +9,19 @@ class Tweet(Model):
     updated_at = DateTimeField(auto_now=True)
     owner = ForeignKey('auth.User', related_name='tweets', on_delete=CASCADE)
 
-    def save(self, *args, **kwargs):
-        """
-        Use the `pygments` library to create a highlighted HTML
-        representation of the code snippet.
-        """
-        super(Tweet, self).save(*args, **kwargs)
-
     class Meta:
         ordering = ['created_at']
+
+    def count(self):
+        return self.liked_by.count()
 
     def __str__(self):
         return self.text
 
 
 class Comment(Model):
-    tweet = ForeignKey(Tweet, on_delete=CASCADE)
-    user = ForeignKey(User, on_delete=CASCADE)
+    tweet = ForeignKey(Tweet, on_delete=CASCADE, related_name='comments')
+    owner = ForeignKey('auth.User', on_delete=CASCADE)
     text = CharField(max_length=200)
 
     def __str__(self):
@@ -33,8 +29,8 @@ class Comment(Model):
 
 
 class Like(Model):
-    tweet = ForeignKey(Tweet, on_delete=CASCADE)
+    tweet = ForeignKey(Tweet, on_delete=CASCADE, related_name='liked_by')
     user = ForeignKey(User, on_delete=CASCADE)
 
     def __str__(self):
-        return self.tweet.text
+        return self.user.username
